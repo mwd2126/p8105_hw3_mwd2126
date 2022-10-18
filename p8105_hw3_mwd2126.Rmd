@@ -31,7 +31,8 @@ There are `r instacart %>% select(aisle_id) %>% distinct %>% count` aisles. To f
 instacart %>% 
   count(aisle) %>%
   filter(n > 10000) %>% 
-  arrange(desc(n)) %>% 
+  arrange(desc(n)) %>%
+  mutate(aisle = fct_reorder(aisle, n)) %>% 
   ggplot(aes(x = aisle, y = n)) + 
   geom_point() +
   labs(title = "Number of items ordered in each aisle", x = "Aisle", y = "Number of items") +
