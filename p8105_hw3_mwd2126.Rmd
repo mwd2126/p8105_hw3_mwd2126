@@ -29,13 +29,24 @@ There are `r instacart %>% select(aisle_id) %>% distinct %>% count` aisles. To f
 
 ```{r}
 instacart %>% 
-  count(aisle) %>% 
-  arrange(desc(n))
+  count(aisle) %>%
+  filter(n > 10000) %>% 
+  arrange(desc(n)) %>% 
+  ggplot(aes(x = aisle, y = n)) + 
+  geom_point() +
+  labs(title = "Number of items ordered in each aisle", x = "Aisle", y = "Number of items") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
 Based on this table, the most items are ordered from the fresh produce aisles. 
 
 Let's look solely at aisles with more than 10,000 items ordered.
+
+```{r}
+instacart %>% 
+  count(aisle)>10000 %>% 
+  
+```
 
 
 
