@@ -5,10 +5,39 @@ date: "2022-10-17"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(p8105.datasets)
+
 ```
+
+#Problem 1
+
+First, I begin by loading the data set.
+
+```{r introduce instacart data frame}
+data("instacart")
+instacart = as_tibble(instacart)
+```
+
+The data set _instacart_ has `r nrow(instacart)` rows and `r ncol(instacart)` columns. The data set lists items ordered by customers in a long format, with each item getting its own row. Key variables include order_number, aisle_id, department_id, and variables related to the time of the order.
+
+There are `r instacart %>% select(aisle_id) %>% distinct %>% count` aisles. To find which aisles the most items are from, I will build a list of the aisles in order of most items to fewest items.
+
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  arrange(desc(n))
+```
+
+Based on this table, the most items are ordered from the fresh produce aisles. 
+
+Let's look solely at aisles with more than 10,000 items ordered.
+
+
 
 ## R Markdown
 
