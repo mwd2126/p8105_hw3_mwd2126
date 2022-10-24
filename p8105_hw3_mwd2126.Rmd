@@ -8,6 +8,7 @@ output: github_document
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(knitr)
 library(ggridges)
 library(patchwork)
 library(p8105.datasets)
@@ -23,9 +24,19 @@ data("instacart")
 instacart = as_tibble(instacart)
 ```
 
-The data set _instacart_ has `r nrow(instacart)` rows and `r ncol(instacart)` columns. The data set lists items ordered by customers in a long format, with each item getting its own row. Key variables include order_number, aisle_id, department_id, and variables related to the time of the order.
+The data set `instacart` has `r nrow(instacart)` rows and `r ncol(instacart)` columns. The data set lists items ordered by customers in a long format, with each item getting its own row. Key variables include order_number, aisle_id, department_id, and variables related to the time of the order.
 
 There are `r instacart %>% select(aisle_id) %>% distinct %>% count` aisles. To find which aisles the most items are from, I will build a list of the aisles in order of most items to fewest items.
+
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  arrange(desc(n))
+```
+
+Based on this table, the most items are ordered from the fresh produce aisles. 
+
+Let's look solely at aisles with more than 10,000 items ordered.
 
 ```{r}
 instacart %>% 
@@ -39,34 +50,29 @@ instacart %>%
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
-Based on this table, the most items are ordered from the fresh produce aisles. 
-
-Let's look solely at aisles with more than 10,000 items ordered.
+Then I'll make a table of the three most popular items in the baking ingredients, dog food care, and packaged vegetables aisles.
 
 ```{r}
 instacart %>% 
-  count(aisle)>10000 %>% 
-  
+  filter(aisle==c("baking ingredients", "dog food care","packaged vegetables fruits")) %>% 
+  group_by(aisle) %>%
+  count(product_name) %>%
+  mutate(rank = min_rank(desc(n))) %>% 
+  filter(rank < 4) %>%
+  arrange(desc(n)) %>%
+  knitr::kable()
 ```
 
+Next I'll make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week.
 
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+instacart %>% 
+  filter(product_name==c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>% 
+  summarize(mean_hr = mean(order_hour_of_day)) %>% 
+  spread(order_dow, mean_hr) %>%
+  knitr::kable()
 ```
+#Problem 2
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
